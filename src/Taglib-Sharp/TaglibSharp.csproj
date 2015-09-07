@@ -1,0 +1,338 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6B143A39-C7B2-4743-9917-92262C60E9A6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TagLib</RootNamespace>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyName>TaglibSharp</AssemblyName>
+    <ReleaseVersion>2.0.4.0</ReleaseVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>.</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <DefineConstants>HAVE_SHARPZIPLIB</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>HAVE_SHARPZIPLIB</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>HAVE_SHARPZIPLIB</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>DtsSPC.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Aac\AudioHeader.cs" />
+    <Compile Include="src\Aac\BitStream.cs" />
+    <Compile Include="src\Aac\File.cs" />
+    <Compile Include="src\Aiff\File.cs" />
+    <Compile Include="src\Aiff\StreamHeader.cs" />
+    <Compile Include="src\Ape\File.cs" />
+    <Compile Include="src\Ape\Footer.cs" />
+    <Compile Include="src\Ape\Item.cs" />
+    <Compile Include="src\Ape\StreamHeader.cs" />
+    <Compile Include="src\Ape\Tag.cs" />
+    <Compile Include="src\Asf\ContentDescriptionObject.cs" />
+    <Compile Include="src\Asf\ContentDescriptor.cs" />
+    <Compile Include="src\Asf\DescriptionRecord.cs" />
+    <Compile Include="src\Asf\ExtendedContentDescriptionObject.cs" />
+    <Compile Include="src\Asf\File.cs" />
+    <Compile Include="src\Asf\FilePropertiesObject.cs" />
+    <Compile Include="src\Asf\Guid.cs" />
+    <Compile Include="src\Asf\HeaderExtensionObject.cs" />
+    <Compile Include="src\Asf\HeaderObject.cs" />
+    <Compile Include="src\Asf\MetadataLibraryObject.cs" />
+    <Compile Include="src\Asf\Object.cs" />
+    <Compile Include="src\Asf\PaddingObject.cs" />
+    <Compile Include="src\Asf\StreamPropertiesObject.cs" />
+    <Compile Include="src\Asf\Tag.cs" />
+    <Compile Include="src\Asf\UnknownObject.cs" />
+    <Compile Include="src\ByteVector.cs" />
+    <Compile Include="src\ByteVectorList.cs" />
+    <Compile Include="src\CombinedTag.cs" />
+    <Compile Include="src\CorruptFileException.cs" />
+    <Compile Include="src\File.cs" />
+    <Compile Include="src\FileTypes.cs" />
+    <Compile Include="src\Flac\Block.cs" />
+    <Compile Include="src\Flac\BlockHeader.cs" />
+    <Compile Include="src\Flac\File.cs" />
+    <Compile Include="src\Flac\Picture.cs" />
+    <Compile Include="src\Flac\StreamHeader.cs" />
+    <Compile Include="src\Genres.cs" />
+    <Compile Include="src\Gif\Codec.cs" />
+    <Compile Include="src\Gif\File.cs" />
+    <Compile Include="src\Gif\GifCommentTag.cs" />
+    <Compile Include="src\ICodec.cs" />
+    <Compile Include="src\Id3v1\StringHandler.cs" />
+    <Compile Include="src\Id3v1\Tag.cs" />
+    <Compile Include="src\Id3v2\ExtendedHeader.cs" />
+    <Compile Include="src\Id3v2\Footer.cs" />
+    <Compile Include="src\Id3v2\Frame.cs" />
+    <Compile Include="src\Id3v2\FrameFactory.cs" />
+    <Compile Include="src\Id3v2\FrameHeader.cs" />
+    <Compile Include="src\Id3v2\Frames\AttachedPictureFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\CommentsFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\GeneralEncapsulatedObjectFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\MusicCdIdentifierFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\PlayCountFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\PopularimeterFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\PrivateFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\RelativeVolumeFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\SynchronizedLyricsFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\TermsOfUseFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\TextIdentificationFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\UniqueFileIdentifierFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\UnknownFrame.cs" />
+    <Compile Include="src\Id3v2\Frames\UnsynchronisedLyricsFrame.cs" />
+    <Compile Include="src\Id3v2\FrameTypes.cs" />
+    <Compile Include="src\Id3v2\Header.cs" />
+    <Compile Include="src\Id3v2\SynchData.cs" />
+    <Compile Include="src\Id3v2\Tag.cs" />
+    <Compile Include="src\IFD\Entries\ByteIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\ByteVectorIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\LongArrayIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\LongIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\MakernoteIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\RationalArrayIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\Rational.cs" />
+    <Compile Include="src\IFD\Entries\RationalIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\SByteIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\ShortArrayIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\ShortIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\SLongArrayIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\SLongIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\SRationalArrayIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\SRational.cs" />
+    <Compile Include="src\IFD\Entries\SRationalIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\SShortArrayIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\SShortIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\StringIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\StripOffsetsIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\SubIFDArrayEntry.cs" />
+    <Compile Include="src\IFD\Entries\SubIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\ThumbnailDataIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\UndefinedIFDEntry.cs" />
+    <Compile Include="src\IFD\Entries\UserCommentIFDEntry.cs" />
+    <Compile Include="src\IFD\IFDDirectory.cs" />
+    <Compile Include="src\IFD\IFDEntry.cs" />
+    <Compile Include="src\IFD\IFDEntryType.cs" />
+    <Compile Include="src\IFD\IFDReader.cs" />
+    <Compile Include="src\IFD\IFDRenderer.cs" />
+    <Compile Include="src\IFD\IFDStructure.cs" />
+    <Compile Include="src\IFD\IFDTag.cs" />
+    <Compile Include="src\IFD\Makernotes\Nikon3MakernoteReader.cs" />
+    <Compile Include="src\IFD\Tags\CanonFileInfoEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\CanonMakerNoteEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\CanonPictureInfoEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\ExifEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\GPSEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\IFDEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\IOPEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\Nikon3MakerNoteEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\NikonIsoInfoEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\NikonLensData3EntryTag.cs" />
+    <Compile Include="src\IFD\Tags\NikonPictureControlEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\NikonPreviewMakerNoteEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\NikonShotInfoEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\NikonVibrationReductionEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\NikonWorldTimeEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\OlympusMakerNoteEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\PanasonicMakerNoteEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\PentaxMakerNoteEntryTag.cs" />
+    <Compile Include="src\IFD\Tags\SonyMakerNoteEntryTag.cs" />
+    <Compile Include="src\Image\Codec.cs" />
+    <Compile Include="src\Image\CombinedImageTag.cs" />
+    <Compile Include="src\Image\File.cs" />
+    <Compile Include="src\Image\ImageBlockFile.cs" />
+    <Compile Include="src\Image\ImageOrientation.cs" />
+    <Compile Include="src\Image\ImageTag.cs" />
+    <Compile Include="src\Image\NoMetadata\File.cs" />
+    <Compile Include="src\Jpeg\Codec.cs" />
+    <Compile Include="src\Jpeg\File.cs" />
+    <Compile Include="src\Jpeg\JpegCommentTag.cs" />
+    <Compile Include="src\Jpeg\Marker.cs" />
+    <Compile Include="src\Jpeg\Table.cs" />
+    <Compile Include="src\ListBase.cs" />
+    <Compile Include="src\Matroska\AudioTrack.cs" />
+    <Compile Include="src\Matroska\EBMLElement.cs" />
+    <Compile Include="src\Matroska\EBMLIDs.cs" />
+    <Compile Include="src\Matroska\File.cs" />
+    <Compile Include="src\Matroska\MatroskaIDs.cs" />
+    <Compile Include="src\Matroska\SubtitleTrack.cs" />
+    <Compile Include="src\Matroska\Tag.cs" />
+    <Compile Include="src\Matroska\Track.cs" />
+    <Compile Include="src\Matroska\VideoTrack.cs" />
+    <Compile Include="src\Mpc\File.cs" />
+    <Compile Include="src\Mpc\StreamHeader.cs" />
+    <Compile Include="src\Mpeg4\AppleTag.cs" />
+    <Compile Include="src\Mpeg4\Box.cs" />
+    <Compile Include="src\Mpeg4\Boxes\AppleAdditionalInfoBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\AppleAnnotationBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\AppleDataBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\AppleElementaryStreamDescriptor.cs" />
+    <Compile Include="src\Mpeg4\Boxes\AppleItemListBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\FullBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\IsoAudioSampleEntry.cs" />
+    <Compile Include="src\Mpeg4\Boxes\IsoChunkLargeOffsetBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\IsoChunkOffsetBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\IsoFreeSpaceBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\IsoHandlerBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\IsoMetaBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\IsoMovieHeaderBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\IsoSampleDescriptionBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\IsoSampleEntry.cs" />
+    <Compile Include="src\Mpeg4\Boxes\IsoSampleTableBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\IsoUserDataBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\IsoVisualSampleEntry.cs" />
+    <Compile Include="src\Mpeg4\Boxes\UnknownBox.cs" />
+    <Compile Include="src\Mpeg4\BoxFactory.cs" />
+    <Compile Include="src\Mpeg4\BoxHeader.cs" />
+    <Compile Include="src\Mpeg4\BoxTypes.cs" />
+    <Compile Include="src\Mpeg4\File.cs" />
+    <Compile Include="src\Mpeg4\FileParser.cs" />
+    <Compile Include="src\Mpeg\AudioFile.cs" />
+    <Compile Include="src\Mpeg\AudioHeader.cs" />
+    <Compile Include="src\Mpeg\File.cs" />
+    <Compile Include="src\Mpeg\VBRIHeader.cs" />
+    <Compile Include="src\Mpeg\VideoHeader.cs" />
+    <Compile Include="src\Mpeg\XingHeader.cs" />
+    <Compile Include="src\NonContainer\EndTag.cs" />
+    <Compile Include="src\NonContainer\File.cs" />
+    <Compile Include="src\NonContainer\StartTag.cs" />
+    <Compile Include="src\NonContainer\Tag.cs" />
+    <Compile Include="src\Ogg\Bitstream.cs" />
+    <Compile Include="src\Ogg\Codec.cs" />
+    <Compile Include="src\Ogg\Codecs\Theora.cs" />
+    <Compile Include="src\Ogg\Codecs\Vorbis.cs" />
+    <Compile Include="src\Ogg\File.cs" />
+    <Compile Include="src\Ogg\GroupedComment.cs" />
+    <Compile Include="src\Ogg\Page.cs" />
+    <Compile Include="src\Ogg\PageHeader.cs" />
+    <Compile Include="src\Ogg\Paginator.cs" />
+    <Compile Include="src\Ogg\XiphComment.cs" />
+    <Compile Include="src\Picture.cs" />
+    <Compile Include="src\Png\Codec.cs" />
+    <Compile Include="src\Png\File.cs" />
+    <Compile Include="src\Png\PngTag.cs" />
+    <Compile Include="src\Properties.cs" />
+    <Compile Include="src\ReadOnlyByteVector.cs" />
+    <Compile Include="src\Riff\AviHeaderList.cs" />
+    <Compile Include="src\Riff\AviStream.cs" />
+    <Compile Include="src\Riff\BitmapInfoHeader.cs" />
+    <Compile Include="src\Riff\DivXTag.cs" />
+    <Compile Include="src\Riff\File.cs" />
+    <Compile Include="src\Riff\InfoTag.cs" />
+    <Compile Include="src\Riff\List.cs" />
+    <Compile Include="src\Riff\ListTag.cs" />
+    <Compile Include="src\Riff\MovieIdTag.cs" />
+    <Compile Include="src\Riff\WaveFormatEx.cs" />
+    <Compile Include="src\StringList.cs" />
+    <Compile Include="src\SupportedMimeType.cs" />
+    <Compile Include="src\Tag.cs" />
+    <Compile Include="src\Tiff\Arw\File.cs" />
+    <Compile Include="src\Tiff\BaseTiffFile.cs" />
+    <Compile Include="src\Tiff\Codec.cs" />
+    <Compile Include="src\Tiff\Cr2\File.cs" />
+    <Compile Include="src\Tiff\Dng\File.cs" />
+    <Compile Include="src\Tiff\File.cs" />
+    <Compile Include="src\Tiff\Nef\File.cs" />
+    <Compile Include="src\Tiff\Pef\File.cs" />
+    <Compile Include="src\Tiff\Rw2\File.cs" />
+    <Compile Include="src\Tiff\Rw2\IFDReader.cs" />
+    <Compile Include="src\Tiff\Rw2\IFDTag.cs" />
+    <Compile Include="src\UnsupportedFormatException.cs" />
+    <Compile Include="src\WavPack\File.cs" />
+    <Compile Include="src\WavPack\StreamHeader.cs" />
+    <Compile Include="src\Xmp\XmlNodeExtensions.cs" />
+    <Compile Include="src\Xmp\XmpNode.cs" />
+    <Compile Include="src\Xmp\XmpNodeType.cs" />
+    <Compile Include="src\Xmp\XmpNodeVisitor.cs" />
+    <Compile Include="src\Xmp\XmpTag.cs" />
+    <Compile Include="src\Mpeg4\Boxes\TextBox.cs" />
+    <Compile Include="src\Mpeg4\Boxes\UrlBox.cs" />
+    <Compile Include="src\IIM\IIMTag.cs" />
+    <Compile Include="src\IIM\IIMReader.cs" />
+    <Compile Include="src\Audible\File.cs" />
+    <Compile Include="src\Audible\Tag.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="DtsSPC.pfx" />
+    <None Include="src\TagLib.sources" />
+  </ItemGroup>
+</Project>

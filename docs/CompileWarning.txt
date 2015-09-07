@@ -1,0 +1,26 @@
+COMPILE WARNING ON VISUAL STUDIO EXPLAINED
+
+Warning	1	Processing COM reference "WMPLib1" from path "C:\WINDOWS\system32\wmp.dll". Type library importer encountered a property getter 'sessionPlaylistCount' on type 'WMPLib.IWMPNowPlayingHelperDispatch' without a valid return type.  The importer will attempt to import this property as a method instead.
+
+http://stackoverflow.com/questions/15796731/build-warnings-related-to-com-reference-version-1-0-type-library-and-vs-2010
+
+It is a benign warning, nothing to worry about. They just didn't author the IDL for the component properly. Property getters in COM are methods, just like they are in .NET. The method must have the proper signature and attributes to be considered a valid property that can be directly translated to a .NET property.
+
+This is fumbled sometimes. A good example is Windows Media Player. Run this command from the Visual Studio Command Prompt in a temporary directory:
+
+  Tlbimp.exe c:\windows\system32\wmp.dll
+And you'll see:
+
+TlbImp : warning TI0000 : Type library importer encountered a property getter 'sessionPlaylistCount' on type 'WMPLib.IWMPNowPlayingHelperDispatch' without a valid return type. The importer will attempt to import this property as a method instead.
+Type library imported to WMPLib.dll
+Next type:
+
+  Oleview.exe c:\windows\system32\wmp.dll
+Which decompiles the type library back to IDL. Select the text in the right pane and copy/paste it into a text editor. Locate "sessionPlaylistCount" and you'll see:
+
+[id(0x00000ba3), propget]
+HRESULT sessionPlaylistCount([out] long* pVal);
+When you compare it with other properties you'll see the mistake, they forgot the [retval] attribute.
+
+It isn't a problem because Tlbimp.exe will simply make it a method instead of a property. You'd write get_sessionPlaylistCount(out count) to use the broken property. It is inconvenient because the syntax is awkward but not otherwise a problem.
+-------------------------------
