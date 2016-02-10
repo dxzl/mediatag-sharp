@@ -1,19 +1,3 @@
-//---------------------------------------------------------------------------
-// Copyright "nebulous" - For now, let's take a leap of faith and say that
-// this program is distributed under the terms of the GNU General Public
-// License. "I'm a doctor not a brick-layer Jim!" - Dr. McCoy
-//
-// I have done more work on some source files and less to none on others.
-//
-// Many people and groups have probably worked on this over the years
-// including Microsoft's Tim Sneath - his code was what I started with.
-//
-// Then I found some updated source in a Windows SDK - So if you know
-// anyone else I need to credit? - e-mail: dxzl@live.com (Scott Swift)
-//---------------------------------------------------------------------------
-// PURPOSE - to read/write Windows Format Media Meta-Data (My focus has
-// been on audio-only...
-//---------------------------------------------------------------------------
 // S.S. Fixed bug that threw exception if you retrieved
 // info on the same file twice... added "Flush()" 3/1/2013
 using System;
@@ -246,7 +230,11 @@ namespace WinMediaLib
 						return GetAttributeByName("Is_Protected");
           case MediaMetadata.Lyrics:
             return GetAttributeByName("WM/Lyrics");
-					case MediaMetadata.Provider:
+          case MediaMetadata.AcoustID:
+            return GetAttributeByName("Acoustid/Id");
+          case MediaMetadata.MBID:
+            return GetAttributeByName("MusicBrainz/Track Id");
+          case MediaMetadata.Provider:
 						return GetAttributeByName("WM/Provider");
 					case MediaMetadata.Publisher:
 						return GetAttributeByName("WM/Publisher");

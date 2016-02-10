@@ -1,19 +1,3 @@
-//---------------------------------------------------------------------------
-// Copyright "nebulous" - For now, let's take a leap of faith and say that
-// this program is distributed under the terms of the GNU General Public
-// License. "I'm a doctor not a brick-layer Jim!" - Dr. McCoy
-//
-// I have done more work on some source files and less to none on others.
-//
-// Many people and groups have probably worked on this over the years
-// including Microsoft's Tim Sneath - his code was what I started with.
-//
-// Then I found some updated source in a Windows SDK - So if you know
-// anyone else I need to credit? - e-mail: dxzl@live.com (Scott Swift)
-//---------------------------------------------------------------------------
-// PURPOSE - to read/write Windows Format Media Meta-Data (My focus has
-// been on audio-only...
-//---------------------------------------------------------------------------
 using System;
 
 namespace WinMediaLib
@@ -27,6 +11,8 @@ namespace WinMediaLib
     internal string publisher;
 		internal string genre;
     internal string lyrics;
+    internal string acoustId;
+    internal string mbId;
     internal string text;
     internal string composer;
     internal string conductor;
@@ -57,6 +43,12 @@ namespace WinMediaLib
 
     public string Lyrics
     { get { return lyrics; } }
+
+    public string AcoustID
+    { get { return acoustId; } }
+
+    public string MBID
+    { get { return mbId; } }
 
     public string Text
     { get { return text; } }
@@ -115,33 +107,35 @@ namespace WinMediaLib
 //*  21  Title                       0    0   STRING  "New Title"
 //*  22  Author                      0    0   STRING  "Arrested Development"
 //*  23  WM/Lyrics                   0    0   STRING  ""
-//*  24  WM/MediaPrimaryClassID      0    0   STRING  "{D1607DBC-E323-4BE2-86A1-48A42A28441E}"
-//*  25  WMFSDKVersion               0    0   STRING  "9.00.00.3250"
-//*  26  WMFSDKNeeded                0    0   STRING  "0.0.0.0000"
-//*  27  IsVBR                       0    0     BOOL  True
-//*  28  ASFLeakyBucketPairs         0    0   BINARY  [114 bytes]
-//*  29  WM/Year                     0    0   STRING  "1998"
-//*  30  WM/EncodingTime             0    0    QWORD  127529672390000000
-//*  31  WM/UniqueFileIdentifier     0    0   STRING  "AMGa_id=R   354431;AMGp_id=P        6;AMGt_id=T  2168780"
-//*  32  WM/Composer                 0    0   STRING  "Arrested Development"
-//*  33  WM/Publisher                0    0   STRING  "EMI"
-//*  34  WM/Genre                    0    0   STRING  "Rap & Hip Hop"
-//*  35  WM/AlbumTitle               0    0   STRING  "The Best of Arrested Development"
-//*  36  WM/AlbumArtist              0    0   STRING  "Arrested Development"
-//*  37  WM/MCDI                     0    0   BINARY  [124 bytes]
-//*  38  WM/Provider                 0    0   STRING  "AMG"
-//*  39  WM/ProviderRating           0    0   STRING  "7"
-//*  40  WM/ProviderStyle            0    0   STRING  "Rap"
-//*  41  WM/TrackNumber              0    0    DWORD  4
-//*  42  WM/MediaClassPrimaryID      0    0     GUID  BC-7D-60-D1-23-E3-E2-4B-86-A1-48-A4-2A-28-44-1E
-//*  43  WM/MediaClassSecondaryID    0    0     GUID  00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
-//*  44  WM/WMContentID              0    0     GUID  89-37-4F-D5-5D-58-C9-49-B5-89-EE-26-64-D3-5F-4F
-//*  45  WM/Composer                 0    0   STRING  "Speech"
-//*  46  WM/WMCollectionID           0    0     GUID  9C-1E-F2-00-D9-73-CE-42-83-B1-44-FB-82-CE-3A-0F
-//*  47  WM/WMCollectionGroupID      0    0     GUID  9C-1E-F2-00-D9-73-CE-42-83-B1-44-FB-82-CE-3A-0F
-//*  48  WM/ASFPacketCount           0    0    QWORD  1900
-//*  49  WM/ASFSecurityObjectsSize   0    0    QWORD  0
-//*  50  WM/Text                     0    0   STRING  ""
-//*  51  WM/Composer                 0    0   STRING  ""
-//*  52  WM/Conductor                0    0   STRING  ""
-//**********************************************************************
+//*  24  AcoustID                    0    0   STRING  ""
+//*  25  MBID                        0    0   STRING  ""
+//*  26  WM/MediaPrimaryClassID      0    0   STRING  "{D1607DBC-E323-4BE2-86A1-48A42A28441E}"
+//*  27  WMFSDKVersion               0    0   STRING  "9.00.00.3250"
+//*  28  WMFSDKNeeded                0    0   STRING  "0.0.0.0000"
+//*  29  IsVBR                       0    0     BOOL  True
+//*  30  ASFLeakyBucketPairs         0    0   BINARY  [114 bytes]
+//*  31  WM/Year                     0    0   STRING  "1998"
+//*  32  WM/EncodingTime             0    0    QWORD  127529672390000000
+//*  33  WM/UniqueFileIdentifier     0    0   STRING  "AMGa_id=R   354431;AMGp_id=P        6;AMGt_id=T  2168780"
+//*  34  WM/Composer                 0    0   STRING  "Arrested Development"
+//*  35  WM/Publisher                0    0   STRING  "EMI"
+//*  36  WM/Genre                    0    0   STRING  "Rap & Hip Hop"
+//*  37  WM/AlbumTitle               0    0   STRING  "The Best of Arrested Development"
+//*  38  WM/AlbumArtist              0    0   STRING  "Arrested Development"
+//*  39  WM/MCDI                     0    0   BINARY  [124 bytes]
+//*  40  WM/Provider                 0    0   STRING  "AMG"
+//*  41  WM/ProviderRating           0    0   STRING  "7"
+//*  42  WM/ProviderStyle            0    0   STRING  "Rap"
+//*  43  WM/TrackNumber              0    0    DWORD  4
+//*  44  WM/MediaClassPrimaryID      0    0     GUID  BC-7D-60-D1-23-E3-E2-4B-86-A1-48-A4-2A-28-44-1E
+//*  45  WM/MediaClassSecondaryID    0    0     GUID  00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+//*  46  WM/WMContentID              0    0     GUID  89-37-4F-D5-5D-58-C9-49-B5-89-EE-26-64-D3-5F-4F
+//*  47  WM/Composer                 0    0   STRING  "Speech"
+//*  48  WM/WMCollectionID           0    0     GUID  9C-1E-F2-00-D9-73-CE-42-83-B1-44-FB-82-CE-3A-0F
+//*  49  WM/WMCollectionGroupID      0    0     GUID  9C-1E-F2-00-D9-73-CE-42-83-B1-44-FB-82-CE-3A-0F
+//*  50  WM/ASFPacketCount           0    0    QWORD  1900
+//*  51  WM/ASFSecurityObjectsSize   0    0    QWORD  0
+//*  52  WM/Text                     0    0   STRING  ""
+//*  53  WM/Composer                 0    0   STRING  ""
+//*  54  WM/Conductor                0    0   STRING  ""
+//*********************************************************************

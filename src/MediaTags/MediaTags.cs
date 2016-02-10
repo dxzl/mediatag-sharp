@@ -7,7 +7,8 @@ using TagLib;
 
 namespace MediaTags
 {
-  //---------------------------------------------------------------------------
+  #region WmTypes
+
   public class WmTypes
   {
     public const ushort WM_TYPE_DWORD = 0;
@@ -19,6 +20,10 @@ namespace MediaTags
     public const ushort WM_TYPE_GUID = 6;
   }
   //---------------------------------------------------------------------------
+  #endregion
+
+  #region SongInfo
+
   // Declare the SongInfo class:
   public class SongInfo
   {
@@ -42,9 +47,10 @@ namespace MediaTags
     public string Album = string.Empty;
     public string Composer = string.Empty;
     public string Genre = string.Empty;
-    public string Duration = string.Empty;
     public string Comments = string.Empty; // We will use WM/Text field of .wma for Comments!
     public string Lyrics = string.Empty;
+    public string AcoustID = string.Empty;
+    public string MBID = string.Empty;
     public string Conductor = string.Empty;
     public string Publisher = string.Empty;
     public string Track = string.Empty;
@@ -56,6 +62,8 @@ namespace MediaTags
     public bool bException = false; // Threw an exception?
 
     public string Copyright = string.Empty;
+
+    public TimeSpan Duration;
     public int TrackCount = UNDEFINED;
     public int Disc = UNDEFINED;
     public int DiscCount = UNDEFINED;
@@ -86,6 +94,8 @@ namespace MediaTags
     public bool bDurationTag = false;
     public bool bCommentsTag = false;
     public bool bLyricsTag = false;
+    public bool bAcoustIDTag = false;
+    public bool bMBIDTag = false;
     public bool bConductorTag = false;
     public bool bPublisherTag = false;
     public bool bTrackTag = false;
@@ -119,24 +129,23 @@ namespace MediaTags
         Album = Album.Trim();
         Composer = Composer.Trim();
         Genre = Genre.Trim();
-        Duration = Duration.Trim();
         Comments = Comments.Trim();
         Lyrics = Lyrics.Trim();
+        AcoustID = AcoustID.Trim();
+        MBID = MBID.Trim();
         Conductor = Conductor.Trim();
         Publisher = Publisher.Trim();
         Track = Track.Trim();
         Year = Year.Trim();
         Copyright = Copyright.Trim();
       }
-      catch
-      {
-      }
+      catch { }
     }
     //---------------------------------------------------------------------------
     public bool AnyMainFlags()
     {
       return bTitleTag || bArtistTag || bPerformerTag || bAlbumTag || bComposerTag ||
-        bGenreTag || bDurationTag || bCommentsTag || bLyricsTag || bConductorTag ||
+        bGenreTag || bDurationTag || bCommentsTag || bLyricsTag || bAcoustIDTag || bMBIDTag || bConductorTag ||
         bPublisherTag || bTrackTag || bYearTag || bCopyrightTag ? true : false;
     }
     //---------------------------------------------------------------------------
@@ -151,9 +160,10 @@ namespace MediaTags
         Album =
         Composer =
         Genre =
-        Duration =
         Comments =
         Lyrics =
+        AcoustID =
+        MBID =
         Conductor =
         Publisher =
         Track =
@@ -174,6 +184,8 @@ namespace MediaTags
         bDurationTag =
         bCommentsTag =
         bLyricsTag =
+        bAcoustIDTag =
+        bMBIDTag =
         bConductorTag =
         bPublisherTag =
         bTrackTag =
@@ -205,6 +217,11 @@ namespace MediaTags
     }
   }
   //---------------------------------------------------------------------------
+  #endregion
+
+  // Small-footprint version of SongInfo to use less memory
+  #region SongInfo2
+
   // Short version (for speed)
   public struct SongInfo2
   {
@@ -218,10 +235,10 @@ namespace MediaTags
     public string Artist;
     public string Album;
     public string Performer;
-    public string Duration;
     public string FilePath;
 
     public int FileType; // -1 no tag info, 0 wma file, 1 mp3 file
+
     public bool bException; // Threw an exception?
 
     // Flags indicating that we have info present for the corresponding field...
@@ -234,6 +251,8 @@ namespace MediaTags
     public bool bDurationTag;
     public bool bFilepathTag;
 
+    public TimeSpan Duration;
+
     //---------------------------------------------------------------------------
     public static void init(SongInfo2 si)
     {
@@ -241,9 +260,10 @@ namespace MediaTags
       si.Artist = "";
       si.Performer = "";
       si.Album = "";
-      si.Duration = "";
       si.FilePath = "";
+
       si.FileType = UNDEFINED;
+
       si.bException = false;
       si.bTitleTag = false;
       si.bArtistTag = false;
@@ -253,43 +273,61 @@ namespace MediaTags
       si.bFilepathTag = false;
     }
   }
-  //---------------------------------------------------------------------------
+  #endregion
+
+  #region MediaTags
+
   public class MediaTags : IDisposable
   {
+    #region Constants
+
+    const string DEFAULT_FILTERS = ".wma .asf .wmv .wm";
+    //---------------------------------------------------------------------------
+    #endregion
+
     #region Properties
+
+    private List<string> g_fileFilterList = new List<string>();
+
+    // Here the calling program sets the file-filters such as ".wma .asf .wmv .wm"
+    public string FileFilters
+    {
+      get { return DecodeFilters(); }
+      set { EncodeFilters(value); }
+    }
 
     private string g_root;
     public string Root
     {
-      get { return this.g_root; }
-      set { this.g_root = value; }
+      get { return g_root; }
+      set { g_root = value; }
     }
     //---------------------------------------------------------------------------
     #endregion
 
-    // Windows Media types:
-    public const ushort WMT_TYPE_DWORD = 0;
-    public const ushort WMT_TYPE_STRING = 1;
-    public const ushort WMT_TYPE_BINARY = 2;
-    public const ushort WMT_TYPE_BOOL = 3;
-    public const ushort WMT_TYPE_QWORD = 4;
-    public const ushort WMT_TYPE_WORD = 5;
-    public const ushort WMT_TYPE_GUID = 6;
+    #region Main
 
-    //---------------------------------------------------------------------------
     public void Dispose()
     {
-     // We have no global resources...
+      // We have no global resources...
+    }
+    //---------------------------------------------------------------------------
+    public MediaTags(string root, string filters)
+    {
+      g_root = root;
+      FileFilters = filters;
     }
     //---------------------------------------------------------------------------
     public MediaTags(string root)
     {
-      this.g_root = root;
+      g_root = root;
+      FileFilters = DEFAULT_FILTERS;
     }
     //---------------------------------------------------------------------------
     public MediaTags()
     {
-      this.g_root = string.Empty;
+      g_root = string.Empty;
+      FileFilters = DEFAULT_FILTERS;
     }
     //---------------------------------------------------------------------------
     public static string Version()
@@ -302,51 +340,53 @@ namespace MediaTags
     // Write a media-file's metadata (tags) from a SongInfo struct...
     // Returns true if success.
     {
-      string ext = Path.GetExtension(file).ToLower();
-
       bool bRet = false; // Presume error
 
-      if (ext == ".wma" || ext == ".asf" || ext == ".wmv" || ext == ".wm")
+      if (FilterInList(Path.GetExtension(file).ToLower()))
       {
         try
         {
           // Attribute types:
-          // WMT_TYPE_DWORD = 0;
-          // WMT_TYPE_STRING = 1;
-          // WMT_TYPE_BINARY = 2;
-          // WMT_TYPE_BOOL = 3;
-          // WMT_TYPE_QWORD = 4;
-          // WMT_TYPE_WORD = 5;
-          // WMT_TYPE_GUID = 6;
+          // WM_TYPE_DWORD = 0;
+          // WM_TYPE_STRING = 1;
+          // WM_TYPE_BINARY = 2;
+          // WM_TYPE_BOOL = 3;
+          // WM_TYPE_QWORD = 4;
+          // WM_TYPE_WORD = 5;
+          // WM_TYPE_GUID = 6;
 
           using (MediaDataManager Editor = new MediaDataManager()) // WMA Editor...
           {
             // See the end of this file for a list of windows media attributes...
-            if (si.bAlbumTag) Editor.SetAttrib(file, 0, "WM/AlbumTitle", MediaTags.WMT_TYPE_STRING, si.Album);
-            if (si.bTitleTag) Editor.SetAttrib(file, 0, "Title", MediaTags.WMT_TYPE_STRING, si.Title);
-            if (si.bArtistTag) Editor.SetAttrib(file, 0, "WM/AlbumArtist", MediaTags.WMT_TYPE_STRING, si.Artist);
-            if (si.bPerformerTag) Editor.SetAttrib(file, 0, "Author", MediaTags.WMT_TYPE_STRING, si.Performer);
-            if (si.bCommentsTag) Editor.SetAttrib(file, 0, "WM/Text", MediaTags.WMT_TYPE_STRING, si.Comments);
-            if (si.bGenreTag) Editor.SetAttrib(file, 0, "WM/Genre", MediaTags.WMT_TYPE_STRING, si.Genre);
-            if (si.bPublisherTag) Editor.SetAttrib(file, 0, "WM/Publisher", MediaTags.WMT_TYPE_STRING, si.Publisher);
-            if (si.bComposerTag) Editor.SetAttrib(file, 0, "WM/Composer", MediaTags.WMT_TYPE_STRING, si.Composer);
-            if (si.bConductorTag) Editor.SetAttrib(file, 0, "WM/Conductor", MediaTags.WMT_TYPE_STRING, si.Conductor);
-            if (si.bYearTag) Editor.SetAttrib(file, 0, "WM/Year", MediaTags.WMT_TYPE_STRING, si.Year);
-            if (si.bLyricsTag) Editor.SetAttrib(file, 0, "WM/Lyrics", MediaTags.WMT_TYPE_STRING, si.Lyrics);
+            if (si.bAlbumTag) Editor.SetAttrib(file, 0, "WM/AlbumTitle", WmTypes.WM_TYPE_STRING, si.Album);
+            if (si.bTitleTag) Editor.SetAttrib(file, 0, "Title", WmTypes.WM_TYPE_STRING, si.Title);
+            if (si.bArtistTag) Editor.SetAttrib(file, 0, "WM/AlbumArtist", WmTypes.WM_TYPE_STRING, si.Artist);
+            if (si.bPerformerTag) Editor.SetAttrib(file, 0, "Author", WmTypes.WM_TYPE_STRING, si.Performer);
+            if (si.bCommentsTag) Editor.SetAttrib(file, 0, "WM/Text", WmTypes.WM_TYPE_STRING, si.Comments);
+            if (si.bGenreTag) Editor.SetAttrib(file, 0, "WM/Genre", WmTypes.WM_TYPE_STRING, si.Genre);
+            if (si.bPublisherTag) Editor.SetAttrib(file, 0, "WM/Publisher", WmTypes.WM_TYPE_STRING, si.Publisher);
+            if (si.bComposerTag) Editor.SetAttrib(file, 0, "WM/Composer", WmTypes.WM_TYPE_STRING, si.Composer);
+            if (si.bConductorTag) Editor.SetAttrib(file, 0, "WM/Conductor", WmTypes.WM_TYPE_STRING, si.Conductor);
+            if (si.bYearTag) Editor.SetAttrib(file, 0, "WM/Year", WmTypes.WM_TYPE_STRING, si.Year);
+            if (si.bLyricsTag) Editor.SetAttrib(file, 0, "WM/Lyrics", WmTypes.WM_TYPE_STRING, si.Lyrics);
+
+            // This is at https://picard.musicbrainz.org/docs/mappings/
+            if (si.bAcoustIDTag) Editor.SetAttrib(file, 0, "Acoustid/Id", WmTypes.WM_TYPE_STRING, si.AcoustID);
+            if (si.bMBIDTag) Editor.SetAttrib(file, 0, "MusicBrainz/Track Id", WmTypes.WM_TYPE_STRING, si.MBID);
 
             // Additional Info:
-            if (si.bCopyrightTag) Editor.SetAttrib(file, 0, "Copyright", MediaTags.WMT_TYPE_STRING, si.Copyright);
-            if (si.bDescriptionTag) Editor.SetAttrib(file, 0, "Description", MediaTags.WMT_TYPE_STRING, si.Description);
+            if (si.bCopyrightTag) Editor.SetAttrib(file, 0, "Copyright", WmTypes.WM_TYPE_STRING, si.Copyright);
+            if (si.bDescriptionTag) Editor.SetAttrib(file, 0, "Description", WmTypes.WM_TYPE_STRING, si.Description);
 
             try
             {
-              if (si.bTrackTag) Editor.SetAttrib(file, 0, "WM/TrackNumber", MediaTags.WMT_TYPE_DWORD, si.Track);
-              if (si.bBitrateTag) Editor.SetAttrib(file, 0, "Bitrate", MediaTags.WMT_TYPE_DWORD, si.BitRate.ToString());
-              if (si.bFilesizeTag) Editor.SetAttrib(file, 0, "FileSize", MediaTags.WMT_TYPE_QWORD, si.FileSize.ToString());
+              if (si.bTrackTag) Editor.SetAttrib(file, 0, "WM/TrackNumber", WmTypes.WM_TYPE_DWORD, si.Track);
+              if (si.bBitrateTag) Editor.SetAttrib(file, 0, "Bitrate", WmTypes.WM_TYPE_DWORD, si.BitRate.ToString());
+              if (si.bFilesizeTag) Editor.SetAttrib(file, 0, "FileSize", WmTypes.WM_TYPE_QWORD, si.FileSize.ToString());
             }
-            catch
-            {
-            }
+            catch { }
+
+            // Duration is read-only!
 
             // These don't exist for windows media files...
             // .TrackCount = (uint)si.TrackCount;
@@ -359,115 +399,123 @@ namespace MediaTags
             bRet = true;
           } // end using
         }
-        catch
-        {
-        }
+        catch { }
       }
       else try
-      {
-        using (TagLib.File f = TagLib.File.Create(file)) // Use taglib-sharp...
         {
-          // Get the tag-frame and create it if necessary...
-          TagLib.Id3v2.Tag tag = (TagLib.Id3v2.Tag)f.GetTag(TagLib.TagTypes.Id3v2, true);
-
-          if (tag == null) return false;
-
-          if (si.bAlbumTag) tag.Album = si.Album;
-          if (si.bTitleTag) tag.Title = si.Title;
-          if (si.bCommentsTag) tag.Comment = si.Comments;
-
-          if (si.bGenreTag)
+          using (TagLib.File f = TagLib.File.Create(file)) // Use taglib-sharp...
           {
-            // Get list of artists, if any, and re-write
-            string[] Genres = tag.Genres;
+            // Get the tag-frame and create it if necessary...
+            TagLib.Id3v2.Tag tag = (TagLib.Id3v2.Tag)f.GetTag(TagLib.TagTypes.Id3v2, true);
 
-            if (Genres.Length == 0)
-              tag.Genres = new string[] { si.Genre };
-            else
+            if (tag == null) return false;
+
+            if (si.bAlbumTag) tag.Album = si.Album;
+            if (si.bTitleTag) tag.Title = si.Title;
+            if (si.bCommentsTag) tag.Comment = si.Comments;
+
+            if (si.bGenreTag)
             {
-              Genres[0] = si.Genre;
-              tag.Genres = Genres;
+              // Get list of artists, if any, and re-write
+              string[] Genres = tag.Genres;
+
+              if (Genres.Length == 0)
+                tag.Genres = new string[] { si.Genre };
+              else
+              {
+                Genres[0] = si.Genre;
+                tag.Genres = Genres;
+              }
             }
-          }
 
-          if (si.bComposerTag)
-          {
-            // Get list of artists, if any, and re-write
-            string[] Composers = tag.Composers;
-
-            if (Composers.Length == 0) tag.Composers = new string[] { si.Composer };
-            else
+            if (si.bComposerTag)
             {
-              Composers[0] = si.Composer;
-              tag.Composers = Composers;
+              // Get list of artists, if any, and re-write
+              string[] Composers = tag.Composers;
+
+              if (Composers.Length == 0)
+                tag.Composers = new string[] { si.Composer };
+              else
+              {
+                Composers[0] = si.Composer;
+                tag.Composers = Composers;
+              }
             }
-          }
 
-          if (si.bArtistTag)
-          {
-            // Get list of artists, if any, and re-write
-            string[] Artists = tag.AlbumArtists;
-
-            if (Artists.Length == 0) tag.AlbumArtists = new string[] { si.Artist };
-            else
+            if (si.bArtistTag)
             {
-              Artists[0] = si.Artist;
-              tag.AlbumArtists = Artists;
+              // Get list of artists, if any, and re-write
+              string[] Artists = tag.AlbumArtists;
+
+              if (Artists.Length == 0)
+                tag.AlbumArtists = new string[] { si.Artist };
+              else
+              {
+                Artists[0] = si.Artist;
+                tag.AlbumArtists = Artists;
+              }
             }
-          }
 
-          if (si.bPerformerTag)
-          {
-            // Get list of performers, if any, and re-write
-            string[] Performers = tag.Performers;
-
-            if (Performers.Length == 0) tag.Performers = new string[] { si.Performer };
-            else
+            if (si.bPerformerTag)
             {
-              Performers[0] = si.Performer;
-              tag.Performers = Performers;
+              // Get list of performers, if any, and re-write
+              string[] Performers = tag.Performers;
+
+              if (Performers.Length == 0)
+                tag.Performers = new string[] { si.Performer };
+              else
+              {
+                Performers[0] = si.Performer;
+                tag.Performers = Performers;
+              }
             }
-          }
 
-          if (si.bPublisherTag) tag.Publisher = si.Publisher;
+            if (si.bPublisherTag)
+              tag.Publisher = si.Publisher;
 
-          if (si.bConductorTag) tag.Conductor = si.Conductor;
+            if (si.bConductorTag)
+              tag.Conductor = si.Conductor;
 
-          if (si.bYearTag)
-          {
-            try { tag.Year = Convert.ToUInt32(si.Year); }
-            catch { tag.Year = 0; }
-          }
+            if (si.bYearTag)
+            {
+              try { tag.Year = Convert.ToUInt32(si.Year); }
+              catch { tag.Year = 0; }
+            }
 
-          if (si.bTrackTag)
-          {
-            try { tag.Track = Convert.ToUInt32(si.Track); }
-            catch { tag.Track = 0; }
-          }
+            if (si.bTrackTag)
+            {
+              try { tag.Track = Convert.ToUInt32(si.Track); }
+              catch { tag.Track = 0; }
+            }
 
-          // Additional Info:
-          if (si.bLyricsTag) tag.Lyrics = si.Lyrics;
+            // if (si.bDurationTag)
+            // DURATION IS READ-ONLY!
 
-          if (si.bCopyrightTag) tag.Copyright = si.Copyright;
-          if (si.bTrackCountTag) tag.TrackCount = (uint)si.TrackCount;
-          if (si.bDiscTag) tag.Disc = (uint)si.Disc;
-          if (si.bDiscCountTag) tag.DiscCount = (uint)si.DiscCount;
+            // Additional Info:
+            if (si.bLyricsTag) tag.Lyrics = si.Lyrics;
+            if (si.bAcoustIDTag) tag.MusicIpId = si.AcoustID;
+            if (si.bMBIDTag) tag.MusicBrainzTrackId = si.MBID;
 
-          // CAN'T SET THESE in taglib-sharp because they are read-only!
-          //f.Properties.Description = si.Description;
-          //f.Properties.AudioBitrate = si.BitRate;
-          //f.Properties.AudioChannels = si.Channels;
-          //f.Properties.BitsPerSample = si.BitsPerSample;
-          //f.Properties.AudioSampleRate = si.SampleRate;
-          //f.Length = si.FileSize;
+            if (si.bCopyrightTag) tag.Copyright = si.Copyright;
+            if (si.bTrackCountTag) tag.TrackCount = (uint)si.TrackCount;
+            if (si.bDiscTag) tag.Disc = (uint)si.Disc;
+            if (si.bDiscCountTag) tag.DiscCount = (uint)si.DiscCount;
 
-          tag.CopyTo(f.Tag, true); // Overwrite the song file's tag...
-          f.Save(); // Save tag
+            // CAN'T SET THESE in taglib-sharp because they are read-only!
+            //f.Properties.Description = si.Description;
+            //f.Properties.AudioBitrate = si.BitRate;
+            //f.Properties.AudioChannels = si.Channels;
+            //f.Properties.BitsPerSample = si.BitsPerSample;
+            //f.Properties.AudioSampleRate = si.SampleRate;
+            //f.Length = si.FileSize;
 
-          bRet = true;
-        } // end using
-      }
-      catch { }
+            tag.CopyTo(f.Tag, true); // Overwrite the song file's tag...
+            f.Save(); // Save tag
+
+            bRet = true;
+          } // end using
+        }
+        catch { }
 
       return bRet;
     }
@@ -476,11 +524,10 @@ namespace MediaTags
     // Write a media-file's metadata (tags) from a SongInfo2 struct...
     // Returns true if success.
     {
-      string ext = Path.GetExtension(file).ToLower();
-
       bool bRet = false; // Presume error
 
-      if (ext == ".wma" || ext == ".asf" || ext == ".wmv" || ext == ".wm")
+      // ext == ".wma" || ext == ".asf" || ext == ".wmv" || ext == ".wm"
+      if (FilterInList(Path.GetExtension(file).ToLower()))
       {
         try
         {
@@ -488,10 +535,10 @@ namespace MediaTags
           {
 
             // See the end of this file for a list of windows media attributes...
-            if (si.bAlbumTag) Editor.SetAttrib(file, 0, "WM/AlbumTitle", MediaTags.WMT_TYPE_STRING, si.Album);
-            if (si.bTitleTag) Editor.SetAttrib(file, 0, "Title", MediaTags.WMT_TYPE_STRING, si.Title);
-            if (si.bArtistTag) Editor.SetAttrib(file, 0, "WM/AlbumArtist", MediaTags.WMT_TYPE_STRING, si.Artist);
-            if (si.bPerformerTag) Editor.SetAttrib(file, 0, "Author", MediaTags.WMT_TYPE_STRING, si.Performer);
+            if (si.bAlbumTag) Editor.SetAttrib(file, 0, "WM/AlbumTitle", WmTypes.WM_TYPE_STRING, si.Album);
+            if (si.bTitleTag) Editor.SetAttrib(file, 0, "Title", WmTypes.WM_TYPE_STRING, si.Title);
+            if (si.bArtistTag) Editor.SetAttrib(file, 0, "WM/AlbumArtist", WmTypes.WM_TYPE_STRING, si.Artist);
+            if (si.bPerformerTag) Editor.SetAttrib(file, 0, "Author", WmTypes.WM_TYPE_STRING, si.Performer);
 
             bRet = true;
           } // end using
@@ -499,50 +546,54 @@ namespace MediaTags
         catch { }
       }
       else try
-      {
-        using (TagLib.File f = TagLib.File.Create(file)) // Use taglib-sharp...
         {
-          // Get the tag-frame and create it if necessary...
-          TagLib.Id3v2.Tag tag = (TagLib.Id3v2.Tag)f.GetTag(TagLib.TagTypes.Id3v2, true);
-
-          if (tag == null) return false;
-
-          if (si.bAlbumTag) tag.Album = si.Album;
-          if (si.bTitleTag) tag.Title = si.Title;
-
-          if (si.bArtistTag)
+          using (TagLib.File f = TagLib.File.Create(file)) // Use taglib-sharp...
           {
-            // Get list of artists, if any, and re-write
-            string[] Artists = tag.AlbumArtists;
+            // Get the tag-frame and create it if necessary...
+            TagLib.Id3v2.Tag tag = (TagLib.Id3v2.Tag)f.GetTag(TagLib.TagTypes.Id3v2, true);
 
-            if (Artists.Length == 0) tag.AlbumArtists = new string[] { si.Artist };
-            else
+            if (tag == null) return false;
+
+            if (si.bAlbumTag)
+              tag.Album = si.Album;
+            if (si.bTitleTag)
+              tag.Title = si.Title;
+
+            if (si.bArtistTag)
             {
-              Artists[0] = si.Artist;
-              tag.AlbumArtists = Artists;
+              // Get list of artists, if any, and re-write
+              string[] Artists = tag.AlbumArtists;
+
+              if (Artists.Length == 0)
+                tag.AlbumArtists = new string[] { si.Artist };
+              else
+              {
+                Artists[0] = si.Artist;
+                tag.AlbumArtists = Artists;
+              }
             }
-          }
 
-          if (si.bPerformerTag)
-          {
-            // Get list of performers, if any, and re-write
-            string[] Performers = tag.Performers;
-
-            if (Performers.Length == 0) tag.Performers = new string[] { si.Performer };
-            else
+            if (si.bPerformerTag)
             {
-              Performers[0] = si.Performer;
-              tag.Performers = Performers;
+              // Get list of performers, if any, and re-write
+              string[] Performers = tag.Performers;
+
+              if (Performers.Length == 0)
+                tag.Performers = new string[] { si.Performer };
+              else
+              {
+                Performers[0] = si.Performer;
+                tag.Performers = Performers;
+              }
             }
-          }
 
-          tag.CopyTo(f.Tag, true); // Overwrite the song file's tag...
-          f.Save(); // Save tag
+            tag.CopyTo(f.Tag, true); // Overwrite the song file's tag...
+            f.Save(); // Save tag
 
-          bRet = true;
-        } // end using
-      }
-      catch { }
+            bRet = true;
+          } // end using
+        }
+        catch { }
 
       return bRet;
     }
@@ -550,12 +601,11 @@ namespace MediaTags
     public SongInfo Read(string file)
     // Read a media-file's metadata (tags) into a SongInfo struct...
     {
-      string ext = Path.GetExtension(file).ToLower();
       SongInfo si = new SongInfo();
 
       si.FilePath = file;
 
-      if (ext == ".wma" || ext == ".asf" || ext == ".wmv" || ext == ".wm")
+      if (FilterInList(Path.GetExtension(file).ToLower()))
       {
         try
         {
@@ -578,7 +628,7 @@ namespace MediaTags
             return si;
           }
 
-          si.Duration = ti.Duration.ToString(); if (!string.IsNullOrEmpty(si.Duration)) si.bDurationTag = true;
+          si.Duration = ti.Duration; if (si.Duration.TotalSeconds > 0) si.bDurationTag = true;
           if (ti.Title != null) { si.Title = ti.Title.Trim(); if (!string.IsNullOrEmpty(si.Title)) si.bTitleTag = true; }
           if (ti.AlbumArtist != null) { si.Artist = ti.AlbumArtist.Trim(); if (!string.IsNullOrEmpty(si.Artist)) si.bArtistTag = true; }
 
@@ -593,6 +643,8 @@ namespace MediaTags
           if (ti.Genre != null) { si.Genre = ti.Genre.Trim(); if (!string.IsNullOrEmpty(si.Genre)) si.bGenreTag = true; }
           if (ti.Text != null) { si.Comments = ti.Text.Trim(); if (!string.IsNullOrEmpty(si.Comments)) si.bCommentsTag = true; }
           if (ti.Lyrics != null) { si.Lyrics = ti.Lyrics.Trim(); if (!string.IsNullOrEmpty(si.Lyrics)) si.bLyricsTag = true; }
+          if (ti.AcoustID != null) { si.AcoustID = ti.AcoustID.Trim(); if (!string.IsNullOrEmpty(si.AcoustID)) si.bAcoustIDTag = true; }
+          if (ti.MBID != null) { si.MBID = ti.MBID.Trim(); if (!string.IsNullOrEmpty(si.MBID)) si.bMBIDTag = true; }
           if (ti.Conductor != null) { si.Conductor = ti.Conductor.Trim(); if (!string.IsNullOrEmpty(si.Conductor)) si.bConductorTag = true; }
           if (ti.Publisher != null) { si.Publisher = ti.Publisher.Trim(); if (!string.IsNullOrEmpty(si.Publisher)) si.bPublisherTag = true; }
           if (ti.Year != null) { si.Year = ti.Year.Trim(); if (!string.IsNullOrEmpty(si.Year)) si.bYearTag = true; }
@@ -610,114 +662,118 @@ namespace MediaTags
         }
       }
       else using (TagLib.File tagFile = TagLib.File.Create(file)) // Use taglib-sharp...
-      {
-        // Note - checking Length on a null string throws an exception!
-
-        // Snippet to read rating sio... (not sure if for mp3 or wma!) but cool :)
-        //
-        //TagLib.Tag tag123 = tagsio.GetTag(TagTypes.Id3v2);
-        //var usr = "Windows Media Player 9 Series";
-        //TagLib.Id3v2.PopularimeterFrame frame = TagLib.Id3v2.PopularimeterFrame.Get(
-        //                                       (TagLib.Id3v2.Tag)tag123, usr, true);
-        //ulong PlayCount = frame.PlayCount;
-        //int Rating = frame.Rating;
-
-        // To WRITE:
-        //Id3v2.Tag tag = (Id3v2.Tag)file.GetTag(TagTypes.Id3v2, true); // set create flag
-        //tag.SetTextFrame(FrameType.TRCK, "03");
-
-        try
         {
-          //TagLib.dll Usage:
+          // Note - checking Length on a null string throws an exception!
+
+          // Snippet to read rating sio... (not sure if for mp3 or wma!) but cool :)
           //
-          //TagLib.File tagFile = TagLib.File.Create(mp3file);
-          //uint year = tagFile.Tag.Year;
-          //
-          //You set the tags like this:
-          //tagFile.Tag.Year = year;
-          //
-          //And then save the changes:
-          //tagFile.Save();
+          //TagLib.Tag tag123 = tagsio.GetTag(TagTypes.Id3v2);
+          //var usr = "Windows Media Player 9 Series";
+          //TagLib.Id3v2.PopularimeterFrame frame = TagLib.Id3v2.PopularimeterFrame.Get(
+          //                                       (TagLib.Id3v2.Tag)tag123, usr, true);
+          //ulong PlayCount = frame.PlayCount;
+          //int Rating = frame.Rating;
 
-          si.FileType = SongInfo.FT_MP3; // mp3 tag info
+          // To WRITE:
+          //Id3v2.Tag tag = (Id3v2.Tag)file.GetTag(TagTypes.Id3v2, true); // set create flag
+          //tag.SetTextFrame(FrameType.TRCK, "03");
 
-          if (tagFile == null)
+          try
           {
-            si.bException = true; // Error
-            return si;
-          }
+            //TagLib.dll Usage:
+            //
+            //TagLib.File tagFile = TagLib.File.Create(mp3file);
+            //uint year = tagFile.Tag.Year;
+            //
+            //You set the tags like this:
+            //tagFile.Tag.Year = year;
+            //
+            //And then save the changes:
+            //tagFile.Save();
 
-          si.Duration = tagFile.Properties.Duration.ToString(); if (!string.IsNullOrEmpty(si.Duration)) si.bDurationTag = true;
-          if (tagFile.Properties.Description != null) { si.Description = tagFile.Properties.Description.Trim(); if (!string.IsNullOrEmpty(si.Description)) si.bDescriptionTag = true; }
-          si.BitRate = tagFile.Properties.AudioBitrate; si.bBitrateTag = true;
-          si.FileSize = tagFile.Length; si.bFilesizeTag = true;
+            si.FileType = SongInfo.FT_MP3; // mp3 tag info
 
-          // add flags???
-          si.Channels = tagFile.Properties.AudioChannels;
-          si.BitsPerSample = tagFile.Properties.BitsPerSample;
-          si.SampleRate = tagFile.Properties.AudioSampleRate;
-
-          // Try to read the v2 tag-frame...
-          TagLib.Id3v2.Tag tagv2 = (TagLib.Id3v2.Tag)tagFile.GetTag(TagLib.TagTypes.Id3v2);
-
-          if (tagv2 != null)
-          {
-            if (tagv2.Title != null) { si.Title = tagv2.Title.Trim(); if (!string.IsNullOrEmpty(si.Title)) si.bTitleTag = true; }
-            if (tagv2.FirstAlbumArtist != null) { si.Artist = tagv2.FirstAlbumArtist.Trim(); if (!string.IsNullOrEmpty(si.Artist)) si.bArtistTag = true; }
-            if (tagv2.FirstPerformer != null) { si.Performer = tagv2.FirstPerformer.Trim(); if (!string.IsNullOrEmpty(si.Performer)) si.bPerformerTag = true; }  // Same as Author in a wma file
-            if (tagv2.FirstComposer != null) { si.Composer = tagv2.FirstComposer.Trim(); if (!string.IsNullOrEmpty(si.Composer)) si.bComposerTag = true; }
-            if (tagv2.Album != null) { si.Album = tagv2.Album.Trim(); if (!string.IsNullOrEmpty(si.Album)) si.bAlbumTag = true; }
-            if (tagv2.FirstGenre != null) { si.Genre = tagv2.FirstGenre.Trim(); if (!string.IsNullOrEmpty(si.Genre)) si.bGenreTag = true; }
-            if (tagv2.Comment != null) { si.Comments = tagv2.Comment.Trim(); if (!string.IsNullOrEmpty(si.Comments)) si.bCommentsTag = true; }
-            if (tagv2.Lyrics != null) { si.Lyrics = tagv2.Lyrics.Trim(); if (!string.IsNullOrEmpty(si.Lyrics)) si.bLyricsTag = true; }
-            if (tagv2.Conductor != null) { si.Conductor = tagv2.Conductor.Trim(); if (!string.IsNullOrEmpty(si.Conductor)) si.bConductorTag = true; }
-            if (tagv2.Publisher != null) { si.Publisher = tagv2.Publisher.Trim(); if (!string.IsNullOrEmpty(si.Publisher)) si.bPublisherTag = true; }
-            if (tagv2.Year > 0) { si.Year = tagv2.Year.ToString(); if (!string.IsNullOrEmpty(si.Year)) si.bYearTag = true; }
-            if (tagv2.Track > 0) { si.Track = tagv2.Track.ToString(); if (!string.IsNullOrEmpty(si.Track)) si.bTrackTag = true; }
-            if (tagv2.Copyright != null) { si.Copyright = tagv2.Copyright.Trim(); if (!string.IsNullOrEmpty(si.Copyright)) si.bCopyrightTag = true; }
-
-            // Extra info
-            si.TrackCount = (int)tagv2.TrackCount;
-            si.Disc = (int)tagv2.Disc;
-            si.DiscCount = (int)tagv2.DiscCount;
-          }
-          else // Try to read the old v1 tag
-          {
-            // Try to read the v1 tag-frame...
-            TagLib.Id3v1.Tag tagv1 = (TagLib.Id3v1.Tag)tagFile.GetTag(TagLib.TagTypes.Id3v1);
-
-            if (tagv1 == null)
+            if (tagFile == null)
             {
-              si.ClearAll();
               si.bException = true; // Error
               return si;
             }
 
-            if (tagv1.Title != null) { si.Title = tagv1.Title.Trim(); if (!string.IsNullOrEmpty(si.Title)) si.bTitleTag = true; }
-            if (tagv1.FirstAlbumArtist != null) { si.Artist = tagv1.FirstAlbumArtist.Trim(); if (!string.IsNullOrEmpty(si.Artist)) si.bArtistTag = true; }
-            if (tagv1.FirstPerformer != null) { si.Performer = tagv1.FirstPerformer.Trim(); if (!string.IsNullOrEmpty(si.Performer)) si.bPerformerTag = true; }  // Same as Author in a wma file
-            if (tagv1.FirstComposer != null) { si.Composer = tagv1.FirstComposer.Trim(); if (!string.IsNullOrEmpty(si.Composer)) si.bComposerTag = true; }
-            if (tagv1.Album != null) { si.Album = tagv1.Album.Trim(); if (!string.IsNullOrEmpty(si.Album)) si.bAlbumTag = true; }
-            if (tagv1.FirstGenre != null) { si.Genre = tagv1.FirstGenre.Trim(); if (!string.IsNullOrEmpty(si.Genre)) si.bGenreTag = true; }
-            if (tagv1.Comment != null) { si.Comments = tagv1.Comment.Trim(); if (!string.IsNullOrEmpty(si.Comments)) si.bCommentsTag = true; }
-            if (tagv1.Lyrics != null) { si.Lyrics = tagv1.Lyrics.Trim(); if (!string.IsNullOrEmpty(si.Lyrics)) si.bLyricsTag = true; }
-            if (tagv1.Conductor != null) { si.Conductor = tagv1.Conductor.Trim(); if (!string.IsNullOrEmpty(si.Conductor)) si.bConductorTag = true; }
-            if (tagv1.Year > 0) { si.Year = tagv1.Year.ToString(); if (!string.IsNullOrEmpty(si.Year)) si.bYearTag = true; }
-            if (tagv1.Track > 0) { si.Track = tagv1.Track.ToString(); if (!string.IsNullOrEmpty(si.Track)) si.bTrackTag = true; }
-            if (tagv1.Copyright != null) { si.Copyright = tagv1.Copyright.Trim(); if (!string.IsNullOrEmpty(si.Copyright)) si.bCopyrightTag = true; }
+            si.Duration = tagFile.Properties.Duration; if (si.Duration.TotalSeconds > 0) si.bDurationTag = true;
+            if (tagFile.Properties.Description != null) { si.Description = tagFile.Properties.Description.Trim(); if (!string.IsNullOrEmpty(si.Description)) si.bDescriptionTag = true; }
+            si.BitRate = tagFile.Properties.AudioBitrate; si.bBitrateTag = true;
+            si.FileSize = tagFile.Length; si.bFilesizeTag = true;
 
-            // Extra info
-            si.TrackCount = (int)tagv1.TrackCount;
-            si.Disc = (int)tagv1.Disc;
-            si.DiscCount = (int)tagv1.DiscCount;
+            // add flags???
+            si.Channels = tagFile.Properties.AudioChannels;
+            si.BitsPerSample = tagFile.Properties.BitsPerSample;
+            si.SampleRate = tagFile.Properties.AudioSampleRate;
+
+            // Try to read the v2 tag-frame...
+            TagLib.Id3v2.Tag tagv2 = (TagLib.Id3v2.Tag)tagFile.GetTag(TagLib.TagTypes.Id3v2);
+
+            if (tagv2 != null)
+            {
+              if (tagv2.Title != null) { si.Title = tagv2.Title.Trim(); if (!string.IsNullOrEmpty(si.Title)) si.bTitleTag = true; }
+              if (tagv2.FirstAlbumArtist != null) { si.Artist = tagv2.FirstAlbumArtist.Trim(); if (!string.IsNullOrEmpty(si.Artist)) si.bArtistTag = true; }
+              if (tagv2.FirstPerformer != null) { si.Performer = tagv2.FirstPerformer.Trim(); if (!string.IsNullOrEmpty(si.Performer)) si.bPerformerTag = true; }  // Same as Author in a wma file
+              if (tagv2.FirstComposer != null) { si.Composer = tagv2.FirstComposer.Trim(); if (!string.IsNullOrEmpty(si.Composer)) si.bComposerTag = true; }
+              if (tagv2.Album != null) { si.Album = tagv2.Album.Trim(); if (!string.IsNullOrEmpty(si.Album)) si.bAlbumTag = true; }
+              if (tagv2.FirstGenre != null) { si.Genre = tagv2.FirstGenre.Trim(); if (!string.IsNullOrEmpty(si.Genre)) si.bGenreTag = true; }
+              if (tagv2.Comment != null) { si.Comments = tagv2.Comment.Trim(); if (!string.IsNullOrEmpty(si.Comments)) si.bCommentsTag = true; }
+              if (tagv2.Lyrics != null) { si.Lyrics = tagv2.Lyrics.Trim(); if (!string.IsNullOrEmpty(si.Lyrics)) si.bLyricsTag = true; }
+              if (tagv2.MusicIpId != null) { si.AcoustID = tagv2.MusicIpId.Trim(); if (!string.IsNullOrEmpty(si.AcoustID)) si.bAcoustIDTag = true; }
+              if (tagv2.MusicBrainzTrackId != null) { si.MBID = tagv2.MusicBrainzTrackId.Trim(); if (!string.IsNullOrEmpty(si.MBID)) si.bMBIDTag = true; }
+              if (tagv2.Conductor != null) { si.Conductor = tagv2.Conductor.Trim(); if (!string.IsNullOrEmpty(si.Conductor)) si.bConductorTag = true; }
+              if (tagv2.Publisher != null) { si.Publisher = tagv2.Publisher.Trim(); if (!string.IsNullOrEmpty(si.Publisher)) si.bPublisherTag = true; }
+              if (tagv2.Year > 0) { si.Year = tagv2.Year.ToString(); if (!string.IsNullOrEmpty(si.Year)) si.bYearTag = true; }
+              if (tagv2.Track > 0) { si.Track = tagv2.Track.ToString(); if (!string.IsNullOrEmpty(si.Track)) si.bTrackTag = true; }
+              if (tagv2.Copyright != null) { si.Copyright = tagv2.Copyright.Trim(); if (!string.IsNullOrEmpty(si.Copyright)) si.bCopyrightTag = true; }
+
+              // Extra info
+              si.TrackCount = (int)tagv2.TrackCount;
+              si.Disc = (int)tagv2.Disc;
+              si.DiscCount = (int)tagv2.DiscCount;
+            }
+            else // Try to read the old v1 tag
+            {
+              // Try to read the v1 tag-frame...
+              TagLib.Id3v1.Tag tagv1 = (TagLib.Id3v1.Tag)tagFile.GetTag(TagLib.TagTypes.Id3v1);
+
+              if (tagv1 == null)
+              {
+                si.ClearAll();
+                si.bException = true; // Error
+                return si;
+              }
+
+              if (tagv1.Title != null) { si.Title = tagv1.Title.Trim(); if (!string.IsNullOrEmpty(si.Title)) si.bTitleTag = true; }
+              if (tagv1.FirstAlbumArtist != null) { si.Artist = tagv1.FirstAlbumArtist.Trim(); if (!string.IsNullOrEmpty(si.Artist)) si.bArtistTag = true; }
+              if (tagv1.FirstPerformer != null) { si.Performer = tagv1.FirstPerformer.Trim(); if (!string.IsNullOrEmpty(si.Performer)) si.bPerformerTag = true; }  // Same as Author in a wma file
+              if (tagv1.FirstComposer != null) { si.Composer = tagv1.FirstComposer.Trim(); if (!string.IsNullOrEmpty(si.Composer)) si.bComposerTag = true; }
+              if (tagv1.Album != null) { si.Album = tagv1.Album.Trim(); if (!string.IsNullOrEmpty(si.Album)) si.bAlbumTag = true; }
+              if (tagv1.FirstGenre != null) { si.Genre = tagv1.FirstGenre.Trim(); if (!string.IsNullOrEmpty(si.Genre)) si.bGenreTag = true; }
+              if (tagv1.Comment != null) { si.Comments = tagv1.Comment.Trim(); if (!string.IsNullOrEmpty(si.Comments)) si.bCommentsTag = true; }
+              if (tagv1.Lyrics != null) { si.Lyrics = tagv1.Lyrics.Trim(); if (!string.IsNullOrEmpty(si.Lyrics)) si.bLyricsTag = true; }
+              if (tagv1.MusicIpId != null) { si.AcoustID = tagv1.MusicIpId.Trim(); if (!string.IsNullOrEmpty(si.AcoustID)) si.bAcoustIDTag = true; }
+              if (tagv1.MusicBrainzTrackId != null) { si.MBID = tagv1.MusicBrainzTrackId.Trim(); if (!string.IsNullOrEmpty(si.MBID)) si.bMBIDTag = true; }
+              if (tagv1.Conductor != null) { si.Conductor = tagv1.Conductor.Trim(); if (!string.IsNullOrEmpty(si.Conductor)) si.bConductorTag = true; }
+              if (tagv1.Year > 0) { si.Year = tagv1.Year.ToString(); if (!string.IsNullOrEmpty(si.Year)) si.bYearTag = true; }
+              if (tagv1.Track > 0) { si.Track = tagv1.Track.ToString(); if (!string.IsNullOrEmpty(si.Track)) si.bTrackTag = true; }
+              if (tagv1.Copyright != null) { si.Copyright = tagv1.Copyright.Trim(); if (!string.IsNullOrEmpty(si.Copyright)) si.bCopyrightTag = true; }
+
+              // Extra info
+              si.TrackCount = (int)tagv1.TrackCount;
+              si.Disc = (int)tagv1.Disc;
+              si.DiscCount = (int)tagv1.DiscCount;
+            }
+          }
+          catch
+          {
+            si.ClearAll();
+            si.bException = true; // Threw an exception
           }
         }
-        catch
-        {
-          si.ClearAll();
-          si.bException = true; // Threw an exception
-        }
-      }
 
       // Trim it up
       si.TrimAll();
@@ -757,7 +813,7 @@ namespace MediaTags
             return si;
           }
 
-          si.Duration = ti.Duration.ToString(); if (!string.IsNullOrEmpty(si.Duration)) si.bDurationTag = true;
+          si.Duration = ti.Duration; if (si.Duration.TotalSeconds > 0) si.bDurationTag = true;
           if (ti.Title != null) { si.Title = ti.Title.Trim(); if (!string.IsNullOrEmpty(si.Title)) si.bTitleTag = true; }
           if (ti.AlbumArtist != null) { si.Artist = ti.AlbumArtist.Trim(); if (!string.IsNullOrEmpty(si.Artist)) si.bArtistTag = true; }
 
@@ -772,42 +828,42 @@ namespace MediaTags
         catch { si.bException = true; } // Threw an exception
       }
       else using (TagLib.File tagFile = TagLib.File.Create(file)) // Use taglib-sharp...
-      {
-        try
         {
-          si.FileType = SongInfo2.FT_MP3; // mp3 tag info
-
-          if (tagFile == null)
+          try
           {
-            si.bException = true; // Error
-            return si;
+            si.FileType = SongInfo2.FT_MP3; // mp3 tag info
+
+            if (tagFile == null)
+            {
+              si.bException = true; // Error
+              return si;
+            }
+
+            si.Duration = tagFile.Properties.Duration; if (si.Duration.TotalSeconds > 0) si.bDurationTag = true;
+
+            // Try to read the v2 tag-frame...
+            TagLib.Id3v2.Tag tagv2 = (TagLib.Id3v2.Tag)tagFile.GetTag(TagLib.TagTypes.Id3v2);
+
+            if (tagv2 != null)
+            {
+              if (tagv2.Title != null) { si.Title = tagv2.Title.Trim(); if (!string.IsNullOrEmpty(si.Title)) si.bTitleTag = true; }
+              if (tagv2.FirstAlbumArtist != null) { si.Artist = tagv2.FirstAlbumArtist.Trim(); if (!string.IsNullOrEmpty(si.Artist)) si.bArtistTag = true; }
+              if (tagv2.FirstPerformer != null) { si.Performer = tagv2.FirstPerformer.Trim(); if (!string.IsNullOrEmpty(si.Performer)) si.bPerformerTag = true; }  // Same as Author in a wma file
+              if (tagv2.Album != null) { si.Album = tagv2.Album.Trim(); if (!string.IsNullOrEmpty(si.Album)) si.bAlbumTag = true; }
+            }
+            else // Try to read the old v1 tag
+            {
+              // Try to read the v1 tag-frame...
+              TagLib.Id3v1.Tag tagv1 = (TagLib.Id3v1.Tag)tagFile.GetTag(TagLib.TagTypes.Id3v1);
+
+              if (tagv1.Title != null) { si.Title = tagv1.Title.Trim(); if (!string.IsNullOrEmpty(si.Title)) si.bTitleTag = true; }
+              if (tagv1.FirstAlbumArtist != null) { si.Artist = tagv1.FirstAlbumArtist.Trim(); if (!string.IsNullOrEmpty(si.Artist)) si.bArtistTag = true; }
+              if (tagv1.FirstPerformer != null) { si.Performer = tagv1.FirstPerformer.Trim(); if (!string.IsNullOrEmpty(si.Performer)) si.bPerformerTag = true; }  // Same as Author in a wma file
+              if (tagv1.Album != null) { si.Album = tagv1.Album.Trim(); if (!string.IsNullOrEmpty(si.Album)) si.bAlbumTag = true; }
+            }
           }
-
-          si.Duration = tagFile.Properties.Duration.ToString(); if (!string.IsNullOrEmpty(si.Duration)) si.bDurationTag = true;
-
-          // Try to read the v2 tag-frame...
-          TagLib.Id3v2.Tag tagv2 = (TagLib.Id3v2.Tag)tagFile.GetTag(TagLib.TagTypes.Id3v2);
-
-          if (tagv2 != null)
-          {
-            if (tagv2.Title != null) { si.Title = tagv2.Title.Trim(); if (!string.IsNullOrEmpty(si.Title)) si.bTitleTag = true; }
-            if (tagv2.FirstAlbumArtist != null) { si.Artist = tagv2.FirstAlbumArtist.Trim(); if (!string.IsNullOrEmpty(si.Artist)) si.bArtistTag = true; }
-            if (tagv2.FirstPerformer != null) { si.Performer = tagv2.FirstPerformer.Trim(); if (!string.IsNullOrEmpty(si.Performer)) si.bPerformerTag = true; }  // Same as Author in a wma file
-            if (tagv2.Album != null) { si.Album = tagv2.Album.Trim(); if (!string.IsNullOrEmpty(si.Album)) si.bAlbumTag = true; }
-          }
-          else // Try to read the old v1 tag
-          {
-            // Try to read the v1 tag-frame...
-            TagLib.Id3v1.Tag tagv1 = (TagLib.Id3v1.Tag)tagFile.GetTag(TagLib.TagTypes.Id3v1);
-
-            if (tagv1.Title != null) { si.Title = tagv1.Title.Trim(); if (!string.IsNullOrEmpty(si.Title)) si.bTitleTag = true; }
-            if (tagv1.FirstAlbumArtist != null) { si.Artist = tagv1.FirstAlbumArtist.Trim(); if (!string.IsNullOrEmpty(si.Artist)) si.bArtistTag = true; }
-            if (tagv1.FirstPerformer != null) { si.Performer = tagv1.FirstPerformer.Trim(); if (!string.IsNullOrEmpty(si.Performer)) si.bPerformerTag = true; }  // Same as Author in a wma file
-            if (tagv1.Album != null) { si.Album = tagv1.Album.Trim(); if (!string.IsNullOrEmpty(si.Album)) si.bAlbumTag = true; }
-          }
+          catch { si.bException = true; } // Threw an exception
         }
-        catch { si.bException = true; } // Threw an exception
-      }
 
       return si;
     }
@@ -861,7 +917,7 @@ namespace MediaTags
         int comparelen = 3; // expected tokins: artist, album, song
 
         // If MediaTags g_root property was set, parse it out of the song-path
-        if (!string.IsNullOrEmpty(g_root) && path.StartsWith(g_root)) path = path.Substring(g_root.Length, path.Length-g_root.Length);
+        if (!string.IsNullOrEmpty(g_root) && path.StartsWith(g_root)) path = path.Substring(g_root.Length, path.Length - g_root.Length);
 
         if (Path.IsPathRooted(path)) comparelen++; // Adjust # expected tokins up if drive-letter present...
 
@@ -1143,5 +1199,57 @@ namespace MediaTags
     // WM/WMShadowFileSourceFileType	g_wszWMWMShadowFileSourceFileType	WMT_TYPE_STRING
     // WM/Writer	g_wszWMWriter	WMT_TYPE_STRING
     // WM/Year	g_wszWMYear	WMT_TYPE_STRING
+    //---------------------------------------------------------------------------
+    #endregion Main
+
+    #region Encode/Decode Filters
+
+    private void EncodeFilters(string textFilterList)
+    {
+      if (g_fileFilterList != null)
+      {
+        try { g_fileFilterList.AddRange(textFilterList.Split(' ')); }
+        catch { g_fileFilterList.AddRange(new string[] { ".wma", ".asf", ".wmv", ".wm" }); }
+      }
+    }
+    //---------------------------------------------------------------------------
+    private string DecodeFilters()
+    {
+      string s = string.Empty;
+
+      try
+      {
+        foreach (string filter in g_fileFilterList)
+          s += filter + ' ';
+
+        if (s.Length > 0)
+          s = s.Substring(0, s.Length - 1);
+      }
+      catch { s = ".wma .asf .wmv .wm"; }
+
+      return s;
+    }
+    //---------------------------------------------------------------------------
+    private bool FilterInList(string ext)
+    {
+      try
+      {
+        // Check the file's extension against the file-filter list
+        if (g_fileFilterList.Count > 0)
+        {
+          foreach (string filter in g_fileFilterList)
+            if (ext == filter.ToLower())
+              return true;
+          return false;
+        }
+        else
+          return false;
+      }
+      catch { return false; }
+    }
+    //---------------------------------------------------------------------------
+    #endregion
   }
+  //---------------------------------------------------------------------------
+  #endregion
 }

@@ -1,19 +1,3 @@
-//---------------------------------------------------------------------------
-// Copyright "nebulous" - For now, let's take a leap of faith and say that
-// this program is distributed under the terms of the GNU General Public
-// License. "I'm a doctor not a brick-layer Jim!" - Dr. McCoy
-//
-// I have done more work on some source files and less to none on others.
-//
-// Many people and groups have probably worked on this over the years
-// including Microsoft's Tim Sneath - his code was what I started with.
-//
-// Then I found some updated source in a Windows SDK - So if you know
-// anyone else I need to credit? - e-mail: dxzl@live.com (Scott Swift)
-//---------------------------------------------------------------------------
-// PURPOSE - to read/write Windows Format Media Meta-Data (My focus has
-// been on audio-only...
-//---------------------------------------------------------------------------
 using System;
 using System.Text;
 using System.Collections.Specialized;
@@ -83,6 +67,8 @@ namespace WinMediaLib
         ti.fileSize = (o == null ? 0 : (ulong)o);
 
         ti.lyrics = md[MediaMetadata.Lyrics] as string;
+        ti.acoustId = md[MediaMetadata.AcoustID] as string;
+        ti.mbId = md[MediaMetadata.MBID] as string;
         ti.text = md[MediaMetadata.Text] as string;
         ti.composer = md[MediaMetadata.Composer] as string;
         ti.conductor = md[MediaMetadata.Conductor] as string;
@@ -141,6 +127,8 @@ namespace WinMediaLib
           row.IsProtected = (bool)o;
 
         row.Lyrics = md[MediaMetadata.Lyrics] as string;
+        row.AcoustID = md[MediaMetadata.AcoustID] as string;
+        row.MBID = md[MediaMetadata.MBID] as string;
         row.Publisher = md[MediaMetadata.Publisher] as string;
         row.Text = md[MediaMetadata.Text] as string;
         row.Title = md[MediaMetadata.Title] as string;

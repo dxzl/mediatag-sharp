@@ -1,6 +1,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual C# Express 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaglibSharp", "Taglib-Sharp\TaglibSharp.csproj", "{6B143A39-C7B2-4743-9917-92262C60E9A6}"
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaglibSharp", "Taglib-Sharp\TaglibSharp.csproj", "{96153CA0-EF57-485F-BAA8-40362039B596}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0E7413FF-EB9E-4714-ACF2-BE3A6A7B2FFD} = {0E7413FF-EB9E-4714-ACF2-BE3A6A7B2FFD}
 	EndProjectSection
@@ -9,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinMediaLib", "WinMediaLib\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaTags", "MediaTags\MediaTags.csproj", "{F0426BAB-CBDF-448F-8A49-35F5E94BD076}"
 	ProjectSection(ProjectDependencies) = postProject
-		{6B143A39-C7B2-4743-9917-92262C60E9A6} = {6B143A39-C7B2-4743-9917-92262C60E9A6}
+		{96153CA0-EF57-485F-BAA8-40362039B596} = {96153CA0-EF57-485F-BAA8-40362039B596}
 		{55F32DF2-0E4B-4E03-9A02-C511854C4199} = {55F32DF2-0E4B-4E03-9A02-C511854C4199}
 	EndProjectSection
 EndProject
@@ -25,18 +27,18 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6B143A39-C7B2-4743-9917-92262C60E9A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6B143A39-C7B2-4743-9917-92262C60E9A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6B143A39-C7B2-4743-9917-92262C60E9A6}.Debug|x64.ActiveCfg = Debug|x64
-		{6B143A39-C7B2-4743-9917-92262C60E9A6}.Debug|x64.Build.0 = Debug|x64
-		{6B143A39-C7B2-4743-9917-92262C60E9A6}.Debug|x86.ActiveCfg = Debug|x86
-		{6B143A39-C7B2-4743-9917-92262C60E9A6}.Debug|x86.Build.0 = Debug|x86
-		{6B143A39-C7B2-4743-9917-92262C60E9A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6B143A39-C7B2-4743-9917-92262C60E9A6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6B143A39-C7B2-4743-9917-92262C60E9A6}.Release|x64.ActiveCfg = Release|x64
-		{6B143A39-C7B2-4743-9917-92262C60E9A6}.Release|x64.Build.0 = Release|x64
-		{6B143A39-C7B2-4743-9917-92262C60E9A6}.Release|x86.ActiveCfg = Release|x86
-		{6B143A39-C7B2-4743-9917-92262C60E9A6}.Release|x86.Build.0 = Release|x86
+		{96153CA0-EF57-485F-BAA8-40362039B596}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96153CA0-EF57-485F-BAA8-40362039B596}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96153CA0-EF57-485F-BAA8-40362039B596}.Debug|x64.ActiveCfg = Debug|x64
+		{96153CA0-EF57-485F-BAA8-40362039B596}.Debug|x64.Build.0 = Debug|x64
+		{96153CA0-EF57-485F-BAA8-40362039B596}.Debug|x86.ActiveCfg = Debug|x86
+		{96153CA0-EF57-485F-BAA8-40362039B596}.Debug|x86.Build.0 = Debug|x86
+		{96153CA0-EF57-485F-BAA8-40362039B596}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96153CA0-EF57-485F-BAA8-40362039B596}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96153CA0-EF57-485F-BAA8-40362039B596}.Release|x64.ActiveCfg = Release|x64
+		{96153CA0-EF57-485F-BAA8-40362039B596}.Release|x64.Build.0 = Release|x64
+		{96153CA0-EF57-485F-BAA8-40362039B596}.Release|x86.ActiveCfg = Release|x86
+		{96153CA0-EF57-485F-BAA8-40362039B596}.Release|x86.Build.0 = Release|x86
 		{55F32DF2-0E4B-4E03-9A02-C511854C4199}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{55F32DF2-0E4B-4E03-9A02-C511854C4199}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55F32DF2-0E4B-4E03-9A02-C511854C4199}.Debug|x64.ActiveCfg = Debug|x64
