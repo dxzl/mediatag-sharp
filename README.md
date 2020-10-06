@@ -1,18 +1,16 @@
 # mediatag-sharp
-Combines taglib-sharp and another library to provide read/write access to both WMA and MP3 tags
+Combines taglib-sharp and another library to provide read/write access to both WMA and MP3 music tags. MediaTagSharp can write WMA tags.
 
-MediaTagSharp is intended for music-files but could be extended in-future to support more file-types. It uses taglib-sharp
-to read/write tags for non-windows-media files.
+MediaTagSharp uses a modified version of taglib-sharp to read/write non-WMA tags.
 
-To build, first add SharpZipLib to your projects directory and unzip https://github.com/icsharpcode/SharpZipLib
-into it (MediaTagSharp's solution includes project ICSharpCode.SharpZLib).
+To build:
+Download mediatag-sharp and unzip to your Visual Studio projects directory.
+Download SharpZipLib and unzip to your Visual Studio projects directory. https://github.com/icsharpcode/SharpZipLib
 
-Now add the project directory MediaTagSharp to your Visual Studio 2015 projects and copy the master's zip
-contents into it. Navigate to src\MediaTagSharp.sln and open the solution.
+Navigate to src\MediaTagSharp.sln and open the solution. There are four projects.
 
-It should build with one warning (from taglib-sharp)... 
+The signing-file, DtsUDP.pfx will show with a yellow caution. You can substitute your own signing-file or right-click and delete it. Open each project's properties page, click the Signing tab and uncheck Sign The Assembly. The solution targets .NET 4 but you can easily change that in the Application tab of each project's properties page.
 
-Readme.txt has basic instructions on how to use MediaTagSharp. The three DLLs you want to reference or copy into
-your project will be in the lib directory.
+Choose Build->Clean, then Build->Build. The three DLLs you want to reference or copy into your project will be in the lib directory.
 
-The solution targets .NET 4 but you can easily change that in the Application tab of each project's properties page.
+Readme.txt has basic instructions on how to use MediaTagSharp. 
