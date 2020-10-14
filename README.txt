@@ -17,6 +17,7 @@ MediaTags.dll depends on the other two libraries, TaglibSharp.dll and WinMediaLi
 -------------------------------------------------------------------------------------------
 
 To use:
+(NOTE: How to use MediaTagSharp can be found in the MiTagger repo)
 
 1) Copy all three DLLs into your own Visual Studio project and create references to them by right-clicking References, Add Reference, click the Browse tab and select the dll file to add. Click the newly added reference and set "Copy Local" to true to copy it to your output directory... 
 
