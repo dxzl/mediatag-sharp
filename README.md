@@ -1,4 +1,7 @@
 # mediatag-sharp
+
+NOTE: Instead of using this library, I suggest switching to https://github.com/mono/taglib-sharp
+
 Combines taglib-sharp and another library to provide read/write access to both WMA and MP3 music tags. MediaTagSharp can write WMA tags.
 
 MediaTagSharp uses a modified version of taglib-sharp to read/write non-WMA tags.
